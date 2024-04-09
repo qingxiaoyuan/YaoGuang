@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>yaoguang</artifactId>
+        <groupId>com.qxy</groupId>
+        <version>0.0.1</version>
+    </parent>
+
+    <artifactId>yaoguang-quartz</artifactId>
+
+    <description>
+        定时任务
+    </description>
+
+    <dependencies>
+        <!-- 定时任务 -->
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.mchange</groupId>
+                    <artifactId>c3p0</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- 通用工具-->
+        <dependency>
+            <groupId>com.qxy</groupId>
+            <artifactId>yaoguang-common</artifactId>
+        </dependency>
+
+        <!-- 青小瑶机器人模块 -->
+        <dependency>
+            <groupId>com.qxy</groupId>
+            <artifactId>yaoguang-notice</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.qxy</groupId>
+            <artifactId>yaoguang-notice</artifactId>
+        </dependency>
+
+
+    </dependencies>
+</project>

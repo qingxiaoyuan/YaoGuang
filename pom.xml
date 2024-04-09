@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.qxy</groupId>
+	<artifactId>yaoguang</artifactId>
+	<version>0.0.1</version>
+	<name>yaoguang</name>
+	<description>摇光系统</description>
+
+
+	<properties>
+		<yaoguang.version>0.0.1</yaoguang.version>
+		<java.version>17</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<springboot.version>3.2.3</springboot.version>
+		<druid.version>1.2.20</druid.version>
+		<jwt.version>0.9.1</jwt.version>
+		<pagehelper.boot.version>2.1.0</pagehelper.boot.version>
+		<fastjson.version>2.0.47</fastjson.version>
+		<bitwalker.version>1.21</bitwalker.version>
+		<swagger.version>3.0.0</swagger.version>
+		<commons.io.version>2.15.1</commons.io.version>
+		<poi.version>4.1.2</poi.version>
+		<jaxb.version>2.3.1</jaxb.version>
+		<okhttp.version>4.10.0</okhttp.version>
+	</properties>
+
+	<!-- 依赖声明 -->
+	<dependencyManagement>
+		<dependencies>
+			<!-- SpringBoot的依赖配置-->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${springboot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- 阿里数据库连接池 -->
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>druid-spring-boot-starter</artifactId>
+				<version>${druid.version}</version>
+			</dependency>
+
+			<!-- Token生成与解析-->
+			<dependency>
+				<groupId>io.jsonwebtoken</groupId>
+				<artifactId>jjwt</artifactId>
+				<version>${jwt.version}</version>
+			</dependency>
+
+			<!-- Jaxb -->
+			<dependency>
+				<groupId>javax.xml.bind</groupId>
+				<artifactId>jaxb-api</artifactId>
+				<version>${jaxb.version}</version>
+			</dependency>
+
+			<!-- page helper 分页插件 -->
+			<dependency>
+				<groupId>com.github.pagehelper</groupId>
+				<artifactId>pagehelper-spring-boot-starter</artifactId>
+				<version>${pagehelper.boot.version}</version>
+			</dependency>
+
+			<!-- io常用工具类 -->
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons.io.version}</version>
+			</dependency>
+
+			<!-- excel工具 -->
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi-ooxml</artifactId>
+				<version>${poi.version}</version>
+			</dependency>
+
+			<!-- 解析客户端操作系统、浏览器等 -->
+			<dependency>
+				<groupId>eu.bitwalker</groupId>
+				<artifactId>UserAgentUtils</artifactId>
+				<version>${bitwalker.version}</version>
+			</dependency>
+
+			<!-- 网络请求 -->
+			<dependency>
+				<groupId>com.squareup.okhttp3</groupId>
+				<artifactId>okhttp</artifactId>
+				<version>${okhttp.version}</version>
+			</dependency>
+
+			<!-- 阿里JSON解析器 -->
+			<dependency>
+				<groupId>com.alibaba.fastjson2</groupId>
+				<artifactId>fastjson2</artifactId>
+				<version>${fastjson.version}</version>
+			</dependency>
+
+			<!-- Swagger3依赖 -->
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-boot-starter</artifactId>
+				<version>${swagger.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>io.swagger</groupId>
+						<artifactId>swagger-models</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+
+			<!-- 核心模块 -->
+			<dependency>
+				<groupId>com.qxy</groupId>
+				<artifactId>yaoguang-framework</artifactId>
+				<version>${yaoguang.version}</version>
+			</dependency>
+
+			<!-- 通用工具模块 -->
+			<dependency>
+				<groupId>com.qxy</groupId>
+				<artifactId>yaoguang-common</artifactId>
+				<version>${yaoguang.version}</version>
+			</dependency>
+
+			<!-- 系统服务模块 -->
+			<dependency>
+				<groupId>com.qxy</groupId>
+				<artifactId>yaoguang-system</artifactId>
+				<version>${yaoguang.version}</version>
+			</dependency>
+
+			<!-- 定时任务模块 -->
+			<dependency>
+				<groupId>com.qxy</groupId>
+				<artifactId>yaoguang-quartz</artifactId>
+				<version>${yaoguang.version}</version>
+			</dependency>
+
+			<!-- 青小瑶机器人模块 -->
+			<dependency>
+				<groupId>com.qxy</groupId>
+				<artifactId>yaoguang-notice</artifactId>
+				<version>${yaoguang.version}</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
+	<modules>
+		<module>yaoguang-api</module>
+		<module>yaoguang-framework</module>
+        <module>yaoguang-common</module>
+		<module>yaoguang-system</module>
+        <module>yaoguang-quartz</module>
+		<module>yaoguang-notice</module>
+	</modules>
+	<packaging>pom</packaging>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>public</id>
+			<name>aliyun nexus</name>
+			<url>https://maven.aliyun.com/repository/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>public</id>
+			<name>aliyun nexus</name>
+			<url>https://maven.aliyun.com/repository/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+</project>
