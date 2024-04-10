@@ -39,4 +39,9 @@ public class CacheConstants
      * 登录账户密码错误次数 redis key
      */
     public static final String PWD_ERR_CNT_KEY = "pwd_err_cnt:";
+
+    /**
+     * 第三方平台token
+     */
+    public static final String THIRD_SYSTEM_TOKEN_KEY = "third_system_tokens:";
 }

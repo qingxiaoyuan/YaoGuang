@@ -4,6 +4,8 @@ import com.qxy.notice.service.INoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 /**
  * 定时任务调度
  */
@@ -13,8 +15,8 @@ public class YaoGuangTask {
     @Autowired
     private INoticeService noticeServer;
 
-    public void noticeDailyReport() {
-        System.out.println("执行无参方法");
+    public void noticeDailyReport() throws IOException {
+        noticeServer.noticeDailyReport();
     }
 
     public void noticeDevReport() {

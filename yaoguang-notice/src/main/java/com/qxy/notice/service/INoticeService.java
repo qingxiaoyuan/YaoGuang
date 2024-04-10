@@ -1,5 +1,7 @@
 package com.qxy.notice.service;
 
+import java.io.IOException;
+
 public interface INoticeService {
 
     /**
@@ -11,4 +13,9 @@ public interface INoticeService {
      * 超时问题单提醒(产品)
      */
     void noticeForPM();
+
+    /**
+     * 日报提醒
+     */
+    void noticeDailyReport() throws IOException;
 }

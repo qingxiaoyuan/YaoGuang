@@ -39,10 +39,6 @@
             <groupId>com.qxy</groupId>
             <artifactId>yaoguang-notice</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.qxy</groupId>
-            <artifactId>yaoguang-notice</artifactId>
-        </dependency>
 
 
     </dependencies>

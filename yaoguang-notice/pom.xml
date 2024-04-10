@@ -17,6 +17,11 @@
             <groupId>com.qxy</groupId>
             <artifactId>yaoguang-common</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.qxy</groupId>
+            <artifactId>yaoguang-system</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

@@ -2,6 +2,7 @@ package com.qxy.common.utils.http;
 
 import com.alibaba.fastjson2.JSON;
 import com.qxy.common.constant.Constants;
+import com.qxy.common.core.domain.ResponseEntity;
 import com.qxy.common.utils.common.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -140,7 +142,7 @@ public class HttpUtils {
         return result.toString();
     }
 
-    public static void sendPost(String requestUrl, Object jsonObject) throws IOException {
+    public static ResponseEntity sendPost(String requestUrl, Object jsonObject) throws IOException {
         URL url = new URL(requestUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -160,29 +162,32 @@ public class HttpUtils {
             byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
-
+        StringBuilder response = new StringBuilder();
         // 获取响应码
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
             try (BufferedReader br = new BufferedReader(
                     new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
-                StringBuilder response = new StringBuilder();
                 while ((line = br.readLine()) != null) {
                     response.append(line);
                 }
-                // 处理响应内容
-                System.out.println("Response: " + response);
             }
         } else {
-            System.out.println("Error: " + connection.getResponseMessage());
+            response.append(connection.getResponseMessage());
         }
 
         // 关闭连接
         connection.disconnect();
+        return new ResponseEntity(responseCode, response.toString());
     }
 
-    public static void sendPost(String requestUrl, Map<String, String> params) throws IOException {
+
+    public static ResponseEntity sendPost(String requestUrl, Map<String, String> params) throws IOException {
+        return HttpUtils.sendPost(requestUrl, params, new HashMap<>());
+    }
+
+    public static ResponseEntity sendPost(String requestUrl, Map<String, String> params, Map<String, String> headers) throws IOException {
         URL url = new URL(requestUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -195,6 +200,7 @@ public class HttpUtils {
         // 设置请求头信息，比如Content-Type一般设置为application/x-www-form-urlencoded
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
+        headers.forEach(connection::setRequestProperty);
         // 配置其他请求头信息（如果有）
         // connection.setRequestProperty("test-header", "post-header-value");
 
@@ -217,26 +223,25 @@ public class HttpUtils {
         try (OutputStream os = connection.getOutputStream()) {
             os.write(postDataBytes);
         }
-
+        StringBuilder response = new StringBuilder();
         // 获取响应码
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
             try (BufferedReader br = new BufferedReader(
                     new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                 String line;
-                StringBuilder response = new StringBuilder();
+                response = new StringBuilder();
                 while ((line = br.readLine()) != null) {
                     response.append(line);
                 }
-                // 处理响应内容
-                System.out.println("Response: " + response);
             }
         } else {
-            System.out.println("Error: " + connection.getResponseMessage());
+            response.append(connection.getResponseMessage());
         }
 
         // 关闭连接
         connection.disconnect();
+        return new ResponseEntity(responseCode, response.toString());
     }
 
     public static String sendSSLPost(String url, String param) {
