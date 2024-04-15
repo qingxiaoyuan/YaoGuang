@@ -4,7 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 import com.qxy.common.constant.CacheConstants;
-import com.qxy.common.constant.RobotConstants;
+import com.qxy.common.constant.RobotConfig;
 import com.qxy.common.core.domain.ResponseEntity;
 import com.qxy.common.core.domain.entity.SysUser;
 import com.qxy.common.core.redis.RedisCache;
@@ -37,6 +37,9 @@ public class NoticeServiceImpl implements INoticeService {
     @Autowired
     private RedisCache redisCache;
 
+    @Autowired
+    private RobotConfig robotConfig;
+
     @Override
     public void noticeForDev() {
         String getNoticeForDevResult = HttpUtils.sendGet("https://gateway.ns820.com/v1/notification/reminder/getNoticeForDev");
@@ -50,7 +53,7 @@ public class NoticeServiceImpl implements INoticeService {
                 noticeData = noticeData.stream().filter(item -> !"220508".equals(item.getUserNo())).toList();
                 List<String> noticeIds = noticeData.stream().map(NoticeData::getUserNo).toList();
                 EnterpriseRobotMessage message = EnterpriseRobotMessage.textBuilder("今日开发超时问题单" + noticeIds.size() + "条，请相关同事注意.").addUserIdForAt(noticeIds.toArray(String[]::new)).build();
-                HttpUtils.sendPost(RobotConstants.BOT_URL, message);
+                HttpUtils.sendPost(robotConfig.getBotUrl(), message);
             } catch (JSONException e) {
                 log.error(e.getMessage());
             } catch (IOException e) {
@@ -72,7 +75,7 @@ public class NoticeServiceImpl implements INoticeService {
                 noticeData = noticeData.stream().filter(item -> !"220508".equals(item.getUserNo())).toList();
                 List<String> noticeIds = noticeData.stream().map(NoticeData::getUserNo).toList();
                 EnterpriseRobotMessage message = EnterpriseRobotMessage.textBuilder("今日开发超时问题单" + noticeIds.size() + "条，请相关同事注意.").addUserIdForAt(noticeIds.toArray(String[]::new)).build();
-                HttpUtils.sendPost(RobotConstants.BOT_URL, message);
+                HttpUtils.sendPost(robotConfig.getBotUrl(), message);
             } catch (JSONException e) {
                 log.error(e.getMessage());
             } catch (IOException e) {
@@ -92,7 +95,7 @@ public class NoticeServiceImpl implements INoticeService {
         params.put("limit", "1000");
         params.put("queryfilter", JSON.toJSONString(queryData));
         header.put("Authorization", dailySystemToken);
-        return HttpUtils.sendPost(RobotConstants.REPORT_SERVE_URL + "/PMS/RDM/TaskFill/GetTaskFillList", params, header);
+        return HttpUtils.sendPost(robotConfig.getReportServerUrl() + "/PMS/RDM/TaskFill/GetTaskFillList", params, header);
     }
 
     private List<String> getNeedNoticeList(List<DailyReportData> dailyReportData, List<SysUser> userList) {
@@ -116,10 +119,10 @@ public class NoticeServiceImpl implements INoticeService {
         if (redisCache.hasKey(dailyTokenKey)) {
             dailySystemToken = redisCache.getCacheObject(dailyTokenKey);
         } else {
-            String getTokenResult = HttpUtils.sendGet(RobotConstants.REPORT_SERVE_URL +
-                    "/api/kernelsession?loginid=" + RobotConstants.OBSERVER_ID +
-                    "&ucode" + RobotConstants.CODE + "&devicename=" +
-                    RobotConstants.OBSERVER_ID + "_" + RobotConstants.CODE);
+            String getTokenResult = HttpUtils.sendGet(robotConfig.getReportServerUrl() +
+                    "/api/kernelsession?loginid=" + robotConfig.getObserverId() +
+                    "&ucode" + robotConfig.getObserverCode() + "&devicename=" +
+                    robotConfig.getObserverId() + "_" + robotConfig.getObserverCode());
             JSONObject tokenObject = JSON.parseObject(getTokenResult);
             dailySystemToken = tokenObject.getString("accesstoken");
             redisCache.setCacheObject(dailyTokenKey, dailySystemToken);
@@ -128,10 +131,10 @@ public class NoticeServiceImpl implements INoticeService {
         List<String> needNoticePerson = null;
         // 401一次说明本次token过期，再刷一次token重试
         if (responseEntity.getHttpStatusCode() == 401) {
-            String getTokenResult = HttpUtils.sendGet(RobotConstants.REPORT_SERVE_URL +
-                    "/api/kernelsession?loginid=" + RobotConstants.OBSERVER_ID +
-                    "&ucode" + RobotConstants.CODE + "&devicename=" +
-                    RobotConstants.OBSERVER_ID + "_" + RobotConstants.CODE);
+            String getTokenResult = HttpUtils.sendGet(robotConfig.getReportServerUrl() +
+                    "/api/kernelsession?loginid=" + robotConfig.getObserverId() +
+                    "&ucode" + robotConfig.getObserverCode() + "&devicename=" +
+                    robotConfig.getObserverId() + "_" + robotConfig.getObserverCode());
             JSONObject tokenObject = JSON.parseObject(getTokenResult);
             dailySystemToken = tokenObject.getString("accesstoken");
             redisCache.setCacheObject(dailyTokenKey, dailySystemToken);
@@ -146,7 +149,7 @@ public class NoticeServiceImpl implements INoticeService {
         }
         if (!needNoticePerson.isEmpty()) {
             EnterpriseRobotMessage message = EnterpriseRobotMessage.textBuilder("青小瑶检测到被@的朋友未填写" + preDate + "的日报").addUserIdForAt(needNoticePerson.toArray(String[]::new)).build();
-            HttpUtils.sendPost(RobotConstants.BOT_URL, message);
+            HttpUtils.sendPost(robotConfig.getBotUrl(), message);
         }
 
     }

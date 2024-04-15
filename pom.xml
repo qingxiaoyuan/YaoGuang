@@ -24,6 +24,7 @@
 		<poi.version>4.1.2</poi.version>
 		<jaxb.version>2.3.1</jaxb.version>
 		<okhttp.version>4.10.0</okhttp.version>
+		<nacos-config-spring-boot.version>0.3.0-RC</nacos-config-spring-boot.version>
 	</properties>
 
 	<!-- 依赖声明 -->
@@ -99,6 +100,13 @@
 				<groupId>com.alibaba.fastjson2</groupId>
 				<artifactId>fastjson2</artifactId>
 				<version>${fastjson.version}</version>
+			</dependency>
+
+			<!-- nacos配置中心 -->
+			<dependency>
+				<groupId>com.alibaba.boot</groupId>
+				<artifactId>nacos-config-spring-boot-starter</artifactId>
+				<version>${nacos-config-spring-boot.version}</version>
 			</dependency>
 
 			<!-- Swagger3依赖 -->

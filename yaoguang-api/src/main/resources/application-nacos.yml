@@ -1,0 +1,6 @@
+nacos:
+  config:
+    server-addr: 192.168.18.250:8848
+    username: nacos
+    password: nacos
+    namespace: yaoguang

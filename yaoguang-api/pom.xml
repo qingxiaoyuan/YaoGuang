@@ -48,6 +48,11 @@
             <version>1.6.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba.boot</groupId>
+            <artifactId>nacos-config-spring-boot-starter</artifactId>
+        </dependency>
+
         <!-- 核心模块 -->
         <dependency>
             <groupId>com.qxy</groupId>
