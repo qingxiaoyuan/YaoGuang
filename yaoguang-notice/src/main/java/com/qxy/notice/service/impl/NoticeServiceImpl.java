@@ -130,7 +130,7 @@ public class NoticeServiceImpl implements INoticeService {
         String dailyTokenKey = CacheConstants.THIRD_SYSTEM_TOKEN_KEY + "daily_token";
         String dailySystemToken;
         if (redisCache.hasKey(dailyTokenKey)) {
-            dailySystemToken = redisCache.getCacheObject(dailyTokenKey) + "11";
+            dailySystemToken = redisCache.getCacheObject(dailyTokenKey);
         } else {
             String getTokenResult = HttpUtils.sendGet(robotConfig.getReportServerUrl() +
                     "/api/kernelsession?loginid=" + robotConfig.getObserverId() +
