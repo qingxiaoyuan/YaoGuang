@@ -42,16 +42,24 @@ public class NoticeServiceImpl implements INoticeService {
 
     @Override
     public void noticeForDev() {
-        String getNoticeForDevResult = HttpUtils.sendGet("https://gateway.ns820.com/v1/notification/reminder/getNoticeForDev");
+        String getNoticeForDevResult = HttpUtils.sendGet("https://gateway.ns820.com/cloud/notification/reminder/getNoticeForDev");
         if (getNoticeForDevResult.isEmpty()) {
             return;
         }
         JSONObject noticeListObject = JSON.parseObject(getNoticeForDevResult);
-        if (noticeListObject.getIntValue("errCode") == 0 && !noticeListObject.getJSONArray("data").isEmpty()) {
+        if (noticeListObject.getIntValue("errCode") == 200 && !noticeListObject.getJSONArray("data").isEmpty()) {
             try {
+                SysUser selectUserFilter = new SysUser();
+                selectUserFilter.setSkipIssueReminder("1");
+                List<SysUser> skipIssueUserList = userMapper.selectUserList(selectUserFilter);
                 List<NoticeData> noticeData = noticeListObject.getJSONArray("data").toJavaList(NoticeData.class);
-                noticeData = noticeData.stream().filter(item -> !"220508".equals(item.getUserNo())).toList();
-                List<String> noticeIds = noticeData.stream().map(NoticeData::getUserNo).toList();
+                noticeData = noticeData.stream().filter(
+                        item -> item.getAyyyy() > 90 && !DateUtils.isToday(item.getFeedbackTime())
+                                && skipIssueUserList.stream().noneMatch(
+                                user -> user.getUserName().equals(item.getUserNo())
+                        )
+                ).toList();
+                List<String> noticeIds = noticeData.stream().map(NoticeData::getUserNo).distinct().toList();
                 EnterpriseRobotMessage message = EnterpriseRobotMessage.textBuilder("今日开发超时问题单" + noticeIds.size() + "条，请相关同事注意.").addUserIdForAt(noticeIds.toArray(String[]::new)).build();
                 HttpUtils.sendPost(robotConfig.getBotUrl(), message);
             } catch (JSONException e) {
@@ -71,8 +79,11 @@ public class NoticeServiceImpl implements INoticeService {
         JSONObject noticeListObject = JSON.parseObject(getNoticeForDevResult);
         if (noticeListObject.getIntValue("errCode") == 0 && !noticeListObject.getJSONArray("data").isEmpty()) {
             try {
+                SysUser selectUserFilter = new SysUser();
+                selectUserFilter.setSkipIssueReminder("1");
+                List<SysUser> skipIssueUserList = userMapper.selectUserList(selectUserFilter);
                 List<NoticeData> noticeData = noticeListObject.getJSONArray("data").toJavaList(NoticeData.class);
-                noticeData = noticeData.stream().filter(item -> !"220508".equals(item.getUserNo())).toList();
+                noticeData = noticeData.stream().filter(item -> skipIssueUserList.stream().noneMatch(user -> user.getUserName().equals(item.getUserNo()))).toList();
                 List<String> noticeIds = noticeData.stream().map(NoticeData::getUserNo).toList();
                 EnterpriseRobotMessage message = EnterpriseRobotMessage.textBuilder("今日开发超时问题单" + noticeIds.size() + "条，请相关同事注意.").addUserIdForAt(noticeIds.toArray(String[]::new)).build();
                 HttpUtils.sendPost(robotConfig.getBotUrl(), message);
@@ -113,11 +124,13 @@ public class NoticeServiceImpl implements INoticeService {
     public void noticeDailyReport() throws IOException {
         LocalDate currentDate = LocalDate.now();
         LocalDate preDate = DateUtils.getLastWorkday(currentDate);
-        List<SysUser> userList = userMapper.selectUserList(new SysUser());
+        SysUser selectUserFilter = new SysUser();
+        selectUserFilter.setSkipDailyReminder("0");
+        List<SysUser> userList = userMapper.selectUserList(selectUserFilter);
         String dailyTokenKey = CacheConstants.THIRD_SYSTEM_TOKEN_KEY + "daily_token";
         String dailySystemToken;
         if (redisCache.hasKey(dailyTokenKey)) {
-            dailySystemToken = redisCache.getCacheObject(dailyTokenKey);
+            dailySystemToken = redisCache.getCacheObject(dailyTokenKey) + "11";
         } else {
             String getTokenResult = HttpUtils.sendGet(robotConfig.getReportServerUrl() +
                     "/api/kernelsession?loginid=" + robotConfig.getObserverId() +
@@ -129,8 +142,10 @@ public class NoticeServiceImpl implements INoticeService {
         }
         ResponseEntity responseEntity = getDailyReportDate(preDate, dailySystemToken);
         List<String> needNoticePerson = null;
-        // 401一次说明本次token过期，再刷一次token重试
-        if (responseEntity.getHttpStatusCode() == 401) {
+        if (responseEntity.getHttpStatusCode() == 200 && !responseEntity.getMessage().isEmpty()) {
+            List<DailyReportData> resultList = JSON.parseObject(responseEntity.getMessage()).getJSONArray("Record").toJavaList(DailyReportData.class);
+            needNoticePerson = getNeedNoticeList(resultList, userList);
+        } else if (responseEntity.getHttpStatusCode() == 401) {
             String getTokenResult = HttpUtils.sendGet(robotConfig.getReportServerUrl() +
                     "/api/kernelsession?loginid=" + robotConfig.getObserverId() +
                     "&ucode" + robotConfig.getObserverCode() + "&devicename=" +
@@ -140,11 +155,7 @@ public class NoticeServiceImpl implements INoticeService {
             redisCache.setCacheObject(dailyTokenKey, dailySystemToken);
 
             ResponseEntity reResponseEntity = getDailyReportDate(preDate, dailySystemToken);
-            List<DailyReportData> resultList = JSON.parseObject(responseEntity.getMessage()).getJSONArray("Record").toJavaList(DailyReportData.class);
-            needNoticePerson = getNeedNoticeList(resultList, userList);
-        }
-        if (responseEntity.getHttpStatusCode() == 200 && !responseEntity.getMessage().isEmpty()) {
-            List<DailyReportData> resultList = JSON.parseObject(responseEntity.getMessage()).getJSONArray("Record").toJavaList(DailyReportData.class);
+            List<DailyReportData> resultList = JSON.parseObject(reResponseEntity.getMessage()).getJSONArray("Record").toJavaList(DailyReportData.class);
             needNoticePerson = getNeedNoticeList(resultList, userList);
         }
         if (!needNoticePerson.isEmpty()) {

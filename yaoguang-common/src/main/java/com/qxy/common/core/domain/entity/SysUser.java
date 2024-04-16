@@ -57,6 +57,14 @@ public class SysUser extends BaseEntity
     @Excel(name = "帐号状态", readConverterExp = "0=正常,1=停用")
     private String status;
 
+    /** 是否跳过日报提醒（0正常 1跳过） */
+    @Excel(name = "跳过日报提醒", readConverterExp = "0=提醒,1=跳过")
+    private String skipDailyReminder;
+
+    /** 是否跳过问题单提醒（0正常 1跳过） */
+    @Excel(name = "跳过问题单提醒", readConverterExp = "0=提醒,1=跳过")
+    private String skipIssueReminder;
+
     /** 删除标志（0代表存在 2代表删除） */
     private String delFlag;
 
@@ -213,6 +221,22 @@ public class SysUser extends BaseEntity
         this.status = status;
     }
 
+    public String getSkipDailyReminder() {
+        return skipDailyReminder;
+    }
+
+    public void setSkipDailyReminder(String skipDailyReminder) {
+        this.skipDailyReminder = skipDailyReminder;
+    }
+
+    public String getSkipIssueReminder() {
+        return skipIssueReminder;
+    }
+
+    public void setSkipIssueReminder(String skipIssueReminder) {
+        this.skipIssueReminder = skipIssueReminder;
+    }
+
     public String getDelFlag()
     {
         return delFlag;
@@ -306,6 +330,8 @@ public class SysUser extends BaseEntity
                 .append("avatar", getAvatar())
                 .append("password", getPassword())
                 .append("status", getStatus())
+                .append("skipDailyReminder", getSkipDailyReminder())
+                .append("skipIssueReminder", getSkipIssueReminder())
                 .append("delFlag", getDelFlag())
                 .append("loginIp", getLoginIp())
                 .append("loginDate", getLoginDate())

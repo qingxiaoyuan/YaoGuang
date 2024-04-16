@@ -6,18 +6,21 @@ public class NoticeData {
 
     private String content;
 
-    private String userName;
+    private String currentUser;
 
     private String userNo;
 
-    private String surplusTime;
+    private int ayyyy;
 
-    public NoticeData(String billNo, String content, String userName, String userNo, String surplusTime) {
+    private String feedbackTime;
+
+    public NoticeData(String billNo, String content, String currentUser, String userNo, int ayyyy, String feedbackTime) {
         this.billNo = billNo;
         this.content = content;
-        this.userName = userName;
+        this.currentUser = currentUser;
         this.userNo = userNo;
-        this.surplusTime = surplusTime;
+        this.ayyyy = ayyyy;
+        this.feedbackTime = feedbackTime;
     }
 
     public String getBillNo() {
@@ -36,13 +39,6 @@ public class NoticeData {
         this.content = content;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
 
     public String getUserNo() {
         return userNo;
@@ -52,11 +48,28 @@ public class NoticeData {
         this.userNo = userNo;
     }
 
-    public String getSurplusTime() {
-        return surplusTime;
+
+    public String getFeedbackTime() {
+        return feedbackTime;
     }
 
-    public void setSurplusTime(String surplusTime) {
-        this.surplusTime = surplusTime;
+    public void setFeedbackTime(String feedbackTime) {
+        this.feedbackTime = feedbackTime;
+    }
+
+    public String getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(String currentUser) {
+        this.currentUser = currentUser;
+    }
+
+    public int getAyyyy() {
+        return ayyyy;
+    }
+
+    public void setAyyyy(int ayyyy) {
+        this.ayyyy = ayyyy;
     }
 }

@@ -39,6 +39,7 @@ public class SysLoginController {
     @Anonymous
     @GetMapping("/test")
     public String test() {
+        noticeService.noticeForDev();
         return "";
     }
 

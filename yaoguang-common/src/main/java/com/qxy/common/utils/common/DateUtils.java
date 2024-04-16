@@ -178,4 +178,29 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         }
 
     }
+
+    public static boolean isToday(String dateString) {
+        if (dateString == null) {
+            return false;
+        }
+        if (dateString.isEmpty()) {
+            return false;
+        }
+        Date date;
+        try {
+            date = dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, dateString);
+        } catch (RuntimeException e) {
+            return false;
+        }
+        // 将Date转换为LocalDate（当前日期时间的日期部分）
+        LocalDate currentDate = date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+
+        // 获取今天的日期
+        LocalDate today = LocalDate.now(ZoneId.systemDefault());
+
+        // 判断是否为今天
+        return currentDate.isEqual(today);
+    }
 }
